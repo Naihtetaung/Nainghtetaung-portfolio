@@ -1,12 +1,31 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { Inter as FontSans } from "next/font/google";
+import { ThemeProvider } from "./components/common/theme-provider";
+import { cn } from "./lib/utils";
+import Header from "./components/common/header";
+import { SiteFooter } from "./components/common/footer";
+import { NProgress } from "nprogress";
+import 'nprogress/nprogress.css'
+import useTransition from "./components/common/route-progress-bar";
+import RouteProgressBar from "./components/common/route-progress-bar";
+
+const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+// Font files can be colocated inside of `pages`
+const fontHeading = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-heading",
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
-
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
@@ -23,11 +42,32 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={cn(
+          "min-h-screen container mx-auto font-sans antialiased",
+          fontSans.variable,
+          fontHeading.variable
+        )}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          themes={[
+            "light",
+            "dark"
+          ]}
+        >
+          <RouteProgressBar/>
+          <div className="flex min-h-screen flex-col justify-between w-full px-6"> 
+            <Header/>
+            <main className="flex-grow pt-6">
+              {children}
+            </main>
+            <SiteFooter/>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );
